@@ -4,8 +4,8 @@ public class RocketTrajectory : MonoBehaviour
 {
     public Transform source;       // Starting point of the rocket
     public Transform destination;  // Target point of the rocket
-    public float arcHeight = 0.5f;   // Maximum height of the arc
-    public float speed = 0.2f;       // Speed of the rocket
+    public float arcHeight = 5f;   // Maximum height of the arc
+    public float speed = 5f;       // Speed of the rocket
 
     private Vector3 startPos;
     private Vector3 endPos;
@@ -14,21 +14,18 @@ public class RocketTrajectory : MonoBehaviour
 
     private void Start()
     {
-        source = FindClosestTargetWithTag();
-
-        destination = GettingTarget();
-
-        startPos = source.position;
-        endPos = destination.position;
-        journeyLength = Vector3.Distance(startPos, endPos);
-        startTime = Time.time;
-
         if (source == null || destination == null)
         {
             //Debug.LogError("Source and Destination must be assigned!");
             return;
         }
 
+        source = FindClosestTargetWithTag();
+
+        startPos = source.position;
+        endPos = destination.position;
+        journeyLength = Vector3.Distance(startPos, endPos);
+        startTime = Time.time;
     }
 
     private void Update()
@@ -36,7 +33,6 @@ public class RocketTrajectory : MonoBehaviour
         if (source == null || destination == null)
         {
             Destroy(gameObject);
-            Debug.LogWarning("No source or destination detected");
             return;
         }
         // Calculate normalized time (0 to 1)
@@ -58,10 +54,9 @@ public class RocketTrajectory : MonoBehaviour
         }
 
         // Destroy the rocket once it reaches the destination
-        if (fractionOfJourney >= 1f /*|| destination == null*/)
+        if (fractionOfJourney >= 1f || destination == null)
         {
             Destroy(gameObject);
-            Debug.LogWarning("No destination detected");
         }
     }
 
@@ -107,13 +102,5 @@ public class RocketTrajectory : MonoBehaviour
 
         // 3. Return the closest object found
         return closestPad;
-    }
-
-    Transform GettingTarget()
-    {
-        Transform finalDestination = RocketTargetManager.Instance.GetTarget();
-        if (finalDestination == null) return null;
-        Debug.LogWarning("Received transform:" + finalDestination);
-        return finalDestination;
     }
 }

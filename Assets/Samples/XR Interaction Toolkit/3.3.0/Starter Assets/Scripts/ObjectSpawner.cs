@@ -9,6 +9,9 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
     /// </summary>
     public class ObjectSpawner : MonoBehaviour
     {
+        //public TargetManager targetManager;
+
+
         [SerializeField]
         [Tooltip("The camera that objects will face when spawned. If not set, defaults to the main camera.")]
         Camera m_CameraToFace;
@@ -247,6 +250,13 @@ namespace UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets
             }
 
             objectSpawned?.Invoke(newObject);
+
+            //checks if it is rocket target, and if so, adds to target manager list
+            if (newObject.CompareTag("RocketTarget"))
+            {
+                Debug.Log("Rocket target spawned in.");
+                RocketTargetManager.Instance.AddTarget(newObject.transform);
+            }
             return true;
         }
 

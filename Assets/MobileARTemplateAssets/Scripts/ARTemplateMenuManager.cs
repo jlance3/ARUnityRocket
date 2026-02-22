@@ -15,6 +15,9 @@ namespace UnityEngine.XR.Templates.AR
     /// </summary>
     public class ARTemplateMenuManager : MonoBehaviour
     {
+        //Rocket Prefab to spawn rockets
+        public GameObject Rocket;
+
         [SerializeField]
         [Tooltip("Button that opens the create menu.")]
         Button m_CreateButton;
@@ -39,6 +42,19 @@ namespace UnityEngine.XR.Templates.AR
         {
             get => m_DeleteButton;
             set => m_DeleteButton = value;
+        }
+
+        [SerializeField]
+        [Tooltip("Button that shoots a rocket from Rocket Pads.")]
+        Button m_ShootButton;
+
+        /// <summary>
+        /// Button that shoots a rocket from Rocket Pads.
+        /// </summary>
+        public Button ShootButton
+        {
+            get => m_ShootButton;
+            set => m_ShootButton = value;
         }
 
         [SerializeField]
@@ -231,6 +247,9 @@ namespace UnityEngine.XR.Templates.AR
             m_CreateButton.onClick.AddListener(ShowMenu);
             m_CancelButton.onClick.AddListener(HideMenu);
             m_DeleteButton.onClick.AddListener(DeleteFocusedObject);
+            // rocket shooting 
+            m_ShootButton.onClick.AddListener(ShootRockets);
+
             m_PlaneManager.trackablesChanged.AddListener(OnPlaneChanged);
         }
 
@@ -243,6 +262,9 @@ namespace UnityEngine.XR.Templates.AR
             m_CreateButton.onClick.RemoveListener(ShowMenu);
             m_CancelButton.onClick.RemoveListener(HideMenu);
             m_DeleteButton.onClick.RemoveListener(DeleteFocusedObject);
+            // rocket shooting 
+            m_ShootButton.onClick.RemoveListener(ShootRockets);
+
             m_PlaneManager.trackablesChanged.RemoveListener(OnPlaneChanged);
         }
 
@@ -272,6 +294,11 @@ namespace UnityEngine.XR.Templates.AR
         /// </summary>
         void Update()
         {
+            GameObject[] Launchpads = GameObject.FindGameObjectsWithTag("RocketPad");
+            //if (Launchpads.Length > 0)
+            //{
+            //    Debug.Log("Found " + Launchpads.Length + " rocketpads.");
+            //}
             if (m_InitializingDebugMenu)
             {
                 m_ARDebugMenu.gameObject.SetActive(false);
@@ -292,12 +319,15 @@ namespace UnityEngine.XR.Templates.AR
                 if (m_ShowObjectMenu)
                 {
                     m_DeleteButton.gameObject.SetActive(false);
+                    m_ShootButton.gameObject.SetActive(false);
                 }
                 else
                 {
                     m_DeleteButton.gameObject.SetActive(m_InteractionGroup?.focusInteractable != null);
-                }
 
+                    //show button if launch pads exist
+                    m_ShootButton.gameObject.SetActive(Launchpads.Length > 0);
+                }
                 m_IsPointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(-1);
             }
             else
@@ -305,6 +335,7 @@ namespace UnityEngine.XR.Templates.AR
                 m_IsPointerOverUI = false;
                 m_CreateButton.gameObject.SetActive(true);
                 m_DeleteButton.gameObject.SetActive(m_InteractionGroup?.focusInteractable != null);
+                m_ShootButton.gameObject.SetActive(Launchpads.Length > 0);
             }
 
             if (!m_IsPointerOverUI && m_ShowOptionsModal)
@@ -455,6 +486,19 @@ namespace UnityEngine.XR.Templates.AR
             if (currentFocusedObject != null)
             {
                 Destroy(currentFocusedObject.transform.gameObject);
+            }
+        }
+
+        //Instantiate rockets if tag with RocketPad exists
+        void ShootRockets()
+        {
+            Debug.Log("Button clicked.");
+            GameObject[] Launchpads = GameObject.FindGameObjectsWithTag("RocketPad");
+
+            foreach (GameObject Launchpad in Launchpads)
+            {
+                Instantiate(Rocket, Launchpad.transform.position, Launchpad.transform.rotation);
+                Debug.Log("Rocket spawned.");
             }
         }
 
