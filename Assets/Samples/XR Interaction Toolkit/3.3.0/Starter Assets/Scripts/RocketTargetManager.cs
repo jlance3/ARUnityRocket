@@ -35,9 +35,21 @@ public class RocketTargetManager : MonoBehaviour
         else
         {
             //reiterates to beginning of list
-            currentTarget = 0;
-            currentTargetIndex = 0;
-            return targetList[currentTargetIndex];
+            int returnTarget = 0;
+            currentTargetIndex = 1;
+            Debug.Log("Returned Index:" + returnTarget);
+            return targetList[returnTarget];
+        }
+    }
+
+    void Update()
+    { //removes null from list when RocketTarget is destroyed
+        for (int i = targetList.Count - 1; i >= 0; i--)
+        {
+            if (targetList[i] == null)
+            {
+                targetList.RemoveAt(i);
+            }
         }
     }
 }

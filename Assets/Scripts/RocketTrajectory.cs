@@ -12,6 +12,8 @@ public class RocketTrajectory : MonoBehaviour
     private float journeyLength;
     private float startTime;
 
+    public GameObject Explosion;
+
     private void Start()
     {
         source = FindClosestTargetWithTag();
@@ -60,8 +62,9 @@ public class RocketTrajectory : MonoBehaviour
         // Destroy the rocket once it reaches the destination
         if (fractionOfJourney >= 1f /*|| destination == null*/)
         {
+            Instantiate(Explosion, transform.position + Vector3.up * 0.1f, Quaternion.identity);
             Destroy(gameObject);
-            Debug.LogWarning("No destination detected");
+            //Debug.LogWarning("No destination detected");
         }
     }
 
@@ -113,7 +116,7 @@ public class RocketTrajectory : MonoBehaviour
     {
         Transform finalDestination = RocketTargetManager.Instance.GetTarget();
         if (finalDestination == null) return null;
-        Debug.LogWarning("Received transform:" + finalDestination);
+        //Debug.LogWarning("Received transform:" + finalDestination);
         return finalDestination;
     }
 }
